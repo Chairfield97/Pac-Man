@@ -86,9 +86,9 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 """
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     "*** YOUR CODE HERE ***"
     visited = []
@@ -103,22 +103,17 @@ def depthFirstSearch(problem):
 
     while not problem.isGoalState(chosenNodeLocation):
 
-        # input("Next?")
-        # print("chosenNodeLocation: ", chosenNodeLocation)
-        # print("chosenNodePath: ", chosenNodePath)
-
-        # if problem.isGoalState(chosenNodeLocation):
-        #     return chosenNodePath
-
         successors = problem.getSuccessors(chosenNodeLocation)
         for state in successors:
             successorLocation = state[0]
             successorPath = chosenNodePath + [state[1]]
-            # print(successorLocation, successorPath)
-            if successorLocation not in visited:
-                frontier.push((successorLocation, successorPath))
+            frontier.push((successorLocation, successorPath))
+
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
+        while chosenNodeLocation in visited:
+            chosenNode = frontier.pop()
+            chosenNodeLocation = chosenNode[0]
         visited.append(chosenNodeLocation)
         chosenNodePath = chosenNode[1]
 
@@ -141,25 +136,22 @@ def breadthFirstSearch(problem):
     chosenNodePath = chosenNode[1]
 
     while not problem.isGoalState(chosenNodeLocation):
-        # input("Next?")
-        # print("chosenNodeLocation: ", chosenNodeLocation)
-        # print("chosenNodePath: ", chosenNodePath)
-
-        # if problem.isGoalState(chosenNodeLocation):
-        #     return chosenNodePath
 
         successors = problem.getSuccessors(chosenNodeLocation)
         for state in successors:
             successorLocation = state[0]
             successorPath = chosenNodePath + [state[1]]
             # print(successorLocation, successorPath)
-            if successorLocation not in visited:
-                frontier.push((successorLocation, successorPath))
+            frontier.push((successorLocation, successorPath))
+
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
+        while chosenNodeLocation in visited:
+            chosenNode = frontier.pop()
+            chosenNodeLocation = chosenNode[0]
         visited.append(chosenNodeLocation)
         chosenNodePath = chosenNode[1]
-    # print(chosenNode[1])
+
     return chosenNodePath
 
 
@@ -169,9 +161,9 @@ def uniformCostSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     visited = []
-    frontier = util.Queue()
-    startNode = (problem.getStartState(), [], 0)
-    frontier.push(startNode)
+    frontier = util.PriorityQueue()
+    startNode = (problem.getStartState(), [])
+    frontier.push(startNode, 0)
 
     chosenNode = frontier.pop()
     chosenNodeLocation = chosenNode[0]
@@ -180,22 +172,24 @@ def uniformCostSearch(problem):
 
     while not problem.isGoalState(chosenNodeLocation):
         # input("Next?")
-        print("chosenNodeLocation: ", chosenNodeLocation)
-        print("chosenNodePath: ", chosenNodePath)
-        print("Cost: ", problem.getCostOfActions(chosenNodePath))
-
-        # if problem.isGoalState(chosenNodeLocation):
-        #     return chosenNodePath
+        # print("chosenNodeLocation: ", chosenNodeLocation)
+        # print("chosenNodePath: ", chosenNodePath)
+        # print("Cost: ", problem.getCostOfActions(chosenNodePath))
 
         successors = problem.getSuccessors(chosenNodeLocation)
         for state in successors:
             successorLocation = state[0]
             successorPath = chosenNodePath + [state[1]]
+            successorCost = state[2]
+            successorCost += problem.getCostOfActions(successorPath)
+            # print("Here is the cost: ", successorCost)
             # print(successorLocation, successorPath)
-            if successorLocation not in visited:
-                frontier.push((successorLocation, successorPath))
+            frontier.push((successorLocation, successorPath), successorCost)
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
+        while chosenNodeLocation in visited:
+            chosenNode = frontier.pop()
+            chosenNodeLocation = chosenNode[0]
         visited.append(chosenNodeLocation)
         chosenNodePath = chosenNode[1]
         # print(problem.getCostOfActions(chosenNodePath))
@@ -217,7 +211,43 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = []
+    frontier = util.PriorityQueue()
+    frontier2 = util.PriorityQueueWithFunction(frontier)
+    startNode = (problem.getStartState(), [])
+    frontier.push(startNode, 0)
+
+    chosenNode = frontier.pop()
+    chosenNodeLocation = chosenNode[0]
+    visited.append(chosenNodeLocation)
+    chosenNodePath = chosenNode[1]
+
+    while not problem.isGoalState(chosenNodeLocation):
+        # input("Next?")
+        # print("chosenNodeLocation: ", chosenNodeLocation)
+        # print("chosenNodePath: ", chosenNodePath)
+        # print("Cost: ", problem.getCostOfActions(chosenNodePath))
+
+        successors = problem.getSuccessors(chosenNodeLocation)
+        for state in successors:
+            successorLocation = state[0]
+            successorPath = chosenNodePath + [state[1]]
+            successorCost = state[2]
+            successorCost += problem.getCostOfActions(successorPath)
+            # print("Here is the cost: ", successorCost)
+            # print(successorLocation, successorPath)
+            frontier.push((successorLocation, successorPath), successorCost)
+        chosenNode = frontier.pop()
+        chosenNodeLocation = chosenNode[0]
+        while chosenNodeLocation in visited:
+            chosenNode = frontier.pop()
+            chosenNodeLocation = chosenNode[0]
+        visited.append(chosenNodeLocation)
+        chosenNodePath = chosenNode[1]
+        # print(problem.getCostOfActions(chosenNodePath))
+
+    # print(chosenNode[1])
+    return chosenNodePath
 
 
 # Abbreviations
