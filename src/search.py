@@ -19,6 +19,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from src.searchAgents import manhattanHeuristic
 
 
 class SearchProblem:
@@ -212,11 +213,46 @@ def nullHeuristic(state, problem=None):
     return 0
 
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic=manhattanHeuristic()):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
+    visited = []
+    frontier = util.Queue()
+    startNode = (problem.getStartState(), [], 0)
+    frontier.push(startNode)
+
+    chosenNode = frontier.pop()
+    chosenNodeLocation = chosenNode[0]
+    visited.append(chosenNodeLocation)
+    chosenNodePath = chosenNode[1]
+
+    while not problem.isGoalState(chosenNodeLocation):
+        # input("Next?")
+        print("chosenNodeLocation: ", chosenNodeLocation)
+        print("chosenNodePath: ", chosenNodePath)
+        print("Cost: ", problem.getCostOfActions(chosenNodePath))
+
+        # if problem.isGoalState(chosenNodeLocation):
+        #     return chosenNodePath
+
+        successors = problem.getSuccessors(chosenNodeLocation)
+        for state in successors:
+            successorLocation = state[0]
+            successorPath = chosenNodePath + [state[1]]
+            # print(successorLocation, successorPath)
+            if successorLocation not in visited:
+                frontier.push((successorLocation, successorPath))
+        chosenNode = frontier.pop()
+        chosenNodeLocation = chosenNode[0]
+        visited.append(chosenNodeLocation)
+        chosenNodePath = chosenNode[1]
+        # print(problem.getCostOfActions(chosenNodePath))
+
+    # print(chosenNode[1])
+    return chosenNodePath
+
     util.raiseNotDefined()
 
 
