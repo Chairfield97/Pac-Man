@@ -19,6 +19,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from src.searchAgents import manhattanHeuristic
 
 
 class SearchProblem:
@@ -206,14 +207,13 @@ def nullHeuristic(state, problem=None):
     return 0
 
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic=manhattanHeuristic):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
     visited = []
     frontier = util.PriorityQueue()
-    frontier2 = util.PriorityQueueWithFunction(frontier)
     startNode = (problem.getStartState(), [])
     frontier.push(startNode, 0)
 
@@ -234,9 +234,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             successorPath = chosenNodePath + [state[1]]
             successorCost = state[2]
             successorCost += problem.getCostOfActions(successorPath)
+            AStarCost = heuristic(successorLocation,problem)
             # print("Here is the cost: ", successorCost)
             # print(successorLocation, successorPath)
-            frontier.push((successorLocation, successorPath), successorCost)
+            frontier.push((successorLocation, successorPath), AStarCost)
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
         while chosenNodeLocation in visited:
