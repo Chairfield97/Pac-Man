@@ -189,6 +189,9 @@ class PositionSearchProblem(search.SearchProblem):
 
         return isGoal
 
+    def getGoal(self):
+        return self.goal
+
     def getSuccessors(self, state):
         """
         Returns successor states, the actions they require, and a cost of 1.
@@ -272,6 +275,7 @@ def manhattanHeuristic(position, problem, info={}):
     The Manhattan distance heuristic for a PositionSearchProblem
     """
     xy1 = position
+    # print ("HERE IS THE POSITION", position)
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
@@ -311,16 +315,24 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.startingGameState = startingGameState
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition, []
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        position = state[0]
+        visitedCorners = state[1]
+        if position in self.corners:
+            if position not in visitedCorners:
+                visitedCorners.append(position)
+            return len(visitedCorners) == 4
+        else:
+            return False
 
     def getSuccessors(self, state):
         """
@@ -338,10 +350,19 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.EAST, Directions.WEST, Directions.NORTH, Directions.SOUTH]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if not hitsWall:
+                nextPosition = nextx, nexty
+                visitedCorners = list(state[1])
+                if nextPosition in self.corners:
+                    if nextPosition not in visitedCorners:
+                        visitedCorners.append(nextPosition)
+                successor = ((nextPosition, visitedCorners), action, 1)
+                successors.append(successor)
 
             "*** YOUR CODE HERE ***"
 
@@ -390,6 +411,10 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+
+    position = state[0]
+    visitedCorners = state[1]
+
     return 0  # Default to trivial solution
 
 
@@ -573,6 +598,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         that will complete the problem definition.
         """
         x, y = state
+
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()

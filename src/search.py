@@ -19,8 +19,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
-from src.searchAgents import manhattanHeuristic
-
+# from searchAgents import manhattanHeuristic
 
 class SearchProblem:
     """
@@ -180,6 +179,7 @@ def uniformCostSearch(problem):
         successors = problem.getSuccessors(chosenNodeLocation)
         for state in successors:
             successorLocation = state[0]
+            # print("HERE IS THE SUCCESSOR LOCATION: ", successorLocation)
             successorPath = chosenNodePath + [state[1]]
             successorCost = state[2]
             successorCost += problem.getCostOfActions(successorPath)
@@ -199,15 +199,22 @@ def uniformCostSearch(problem):
     return chosenNodePath
 
 
-def nullHeuristic(state, problem=None):
+def nullHeuristic(position, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+    """
+        The Manhattan distance heuristic for a PositionSearchProblem
+        """
+    # xy1 = position
+    # print ("HERE IS THE POSITION", position)
+    # xy2 = [1, 1]
+    # return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
     return 0
 
 
-def aStarSearch(problem, heuristic=manhattanHeuristic):
+def aStarSearch(problem, heuristic=nullHeuristic):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
@@ -221,7 +228,7 @@ def aStarSearch(problem, heuristic=manhattanHeuristic):
     chosenNodeLocation = chosenNode[0]
     visited.append(chosenNodeLocation)
     chosenNodePath = chosenNode[1]
-
+    # print(heuristic)
     while not problem.isGoalState(chosenNodeLocation):
         # input("Next?")
         # print("chosenNodeLocation: ", chosenNodeLocation)
@@ -231,13 +238,19 @@ def aStarSearch(problem, heuristic=manhattanHeuristic):
         successors = problem.getSuccessors(chosenNodeLocation)
         for state in successors:
             successorLocation = state[0]
+            # print("HERE IS THE SUCCESSOR LOCATION: ", successorLocation)
             successorPath = chosenNodePath + [state[1]]
             successorCost = state[2]
-            successorCost += problem.getCostOfActions(successorPath)
-            AStarCost = heuristic(successorLocation,problem)
+            successorCost = problem.getCostOfActions(successorPath)
+
+            # if heuristic is not None:
+                # AStarCost += heuristic(successorLocation, problem)
+                # print("HERE IS THE SUCCESSOR COST: ", AStarCost)
+            successorCost += heuristic(successorLocation, problem)
+                # print("HERE IS THE SUCCESSOR COST: ", successorCost)
             # print("Here is the cost: ", successorCost)
-            # print(successorLocation, successorPath)
-            frontier.push((successorLocation, successorPath), AStarCost)
+            # print(successorLocation, successorPath, successorCost)
+            frontier.push((successorLocation, successorPath), successorCost)
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
         while chosenNodeLocation in visited:
@@ -248,6 +261,7 @@ def aStarSearch(problem, heuristic=manhattanHeuristic):
         # print(problem.getCostOfActions(chosenNodePath))
 
     # print(chosenNode[1])
+    # print(successorCost)
     return chosenNodePath
 
 
