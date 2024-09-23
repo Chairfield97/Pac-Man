@@ -415,7 +415,26 @@ def cornersHeuristic(state, problem):
     position = state[0]
     visitedCorners = state[1]
 
-    return 0  # Default to trivial solution
+    #Get the list of corners PacMan hasn't visited yet.
+    unvisitedCorners = []
+    for corner in corners:
+        if corner not in visitedCorners:
+            unvisitedCorners.append(corner)
+
+    #If there are no more corners to visit we win! :P
+    if len(unvisitedCorners) == 0:
+        return 0  # Default to trivial solution
+
+
+    #make a list of all the manhattan distances from the current position to
+    #all the unvisited corners.
+    #formula for calculating Manhattan distance is (x1 - x2) + (y1 -y2)
+    distances = []
+    for corner in unvisitedCorners:
+        distances.append((position[0] - corner[0]) + (position[1] - corner[1]))
+
+
+    return min(distances)
 
 
 class AStarCornersAgent(SearchAgent):
