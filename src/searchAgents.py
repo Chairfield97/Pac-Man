@@ -431,9 +431,9 @@ def cornersHeuristic(state, problem):
     #formula for calculating Manhattan distance is (x1 - x2) + (y1 -y2)
     distances = []
     for corner in unvisitedCorners:
-        distances.append((position[0] - corner[0]) + (position[1] - corner[1]))
+        distances.append( abs((position[0] - corner[0]))+ abs((position[1] - corner[1])))
 
-
+    print(distances)
     return min(distances)
 
 
