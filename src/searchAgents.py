@@ -553,7 +553,19 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    food_coordinates = foodGrid.asList()
+
+    print (position)
+
+    distances = []
+    # just calculating distance from current position to all of the existing food pellets
+    for food in food_coordinates:
+        distances.append(abs((position[0] - food[0])) + abs((position[1] - food[1])))
+    #if there is no more food return 0
+    if not food_coordinates:
+        return 0
+    else:# if there is still food remaining return the largest distance in remaining pellets
+        return max(distances)
 
 
 class ClosestDotSearchAgent(SearchAgent):
