@@ -414,11 +414,13 @@ def cornersHeuristic(state, problem):
 
     position = state[0]
     visitedCorners = state[1]
-
+    print("VISITED CORNERS", visitedCorners)
     #Get the list of corners PacMan hasn't visited yet.
     unvisitedCorners = []
     for corner in corners:
         if corner not in visitedCorners:
+            print("CORNERS: ",corner)
+
             unvisitedCorners.append(corner)
 
     #If there are no more corners to visit we win! :P
@@ -432,9 +434,12 @@ def cornersHeuristic(state, problem):
     distances = []
     for corner in unvisitedCorners:
         distances.append( abs((position[0] - corner[0]))+ abs((position[1] - corner[1])))
+        print("Current Position:", position[0], position[1])
+        print("Corners",corner[0], corner[1])
 
     print(distances)
-    return min(distances)
+    print("chosen corner: ", max(distances))
+    return max(distances)
 
 
 class AStarCornersAgent(SearchAgent):
