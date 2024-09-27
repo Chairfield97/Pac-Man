@@ -91,32 +91,49 @@ def depthFirstSearch(problem):
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     "*** YOUR CODE HERE ***"
+    # create an epmpty list to store visited locations
     visited = []
+    # create the frontier using a stack for LIFO function used by DFS
     frontier = util.Stack()
+    # get the start node from start state
     startNode = (problem.getStartState(), [])
+    # push that node to the frontier
     frontier.push(startNode)
-
+    # get the next node in the frontier
     chosenNode = frontier.pop()
+    # extract location
     chosenNodeLocation = chosenNode[0]
+    # because it is the first node, add it to visited without check
     visited.append(chosenNodeLocation)
+    # get the path
     chosenNodePath = chosenNode[1]
-
+    # while the current location is not a goal state
     while not problem.isGoalState(chosenNodeLocation):
-
+        # get all successor nodes and store in a list
         successors = problem.getSuccessors(chosenNodeLocation)
+        # for each successor node
         for state in successors:
+            # extract location
             successorLocation = state[0]
+            # extract path
             successorPath = chosenNodePath + [state[1]]
+            # push the successor to the frontier
             frontier.push((successorLocation, successorPath))
-
+        # get the next node from the frontier
         chosenNode = frontier.pop()
+        # extract its location
         chosenNodeLocation = chosenNode[0]
+        # while the current location is in the visited locations list
         while chosenNodeLocation in visited:
+            # get a new node from the frontier to avoid duplicate expansions
             chosenNode = frontier.pop()
+            # extract its location to check at top of while loop
             chosenNodeLocation = chosenNode[0]
+        # once we have found an unvisited location, add it to the list of visited locations
         visited.append(chosenNodeLocation)
+        # get its path to return and return to top of while to check if its a goal state
         chosenNodePath = chosenNode[1]
-
+    # Once we have found a goal state, return the path to it
     return chosenNodePath
 
 
@@ -125,77 +142,114 @@ def breadthFirstSearch(problem):
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
+    # create an empty list to hold previously visited locations
     visited = []
+    # create the frontier using a queue for FIFO structure used by BFS
     frontier = util.Queue()
+    # create the start node from start state
     startNode = (problem.getStartState(), [])
+    # push start node to frontier
     frontier.push(startNode)
-
+    # grab next node from frontier
     chosenNode = frontier.pop()
+    # extract location
     chosenNodeLocation = chosenNode[0]
+    # add to visited locations list
     visited.append(chosenNodeLocation)
+    # extract path
     chosenNodePath = chosenNode[1]
-
+    # while current state is not a goal state
     while not problem.isGoalState(chosenNodeLocation):
-
+        # expand the current node
         successors = problem.getSuccessors(chosenNodeLocation)
+        # for each successor node
         for state in successors:
+            # extract location
             successorLocation = state[0]
+            # extract path
             successorPath = chosenNodePath + [state[1]]
             # print(successorLocation, successorPath)
+            # push node to the frontier
             frontier.push((successorLocation, successorPath))
-
+        # get the next node in the frontier
         chosenNode = frontier.pop()
+        # extract location
         chosenNodeLocation = chosenNode[0]
+        # while the current location is in the visited list
         while chosenNodeLocation in visited:
+            # get another node
             chosenNode = frontier.pop()
+            # extract location
             chosenNodeLocation = chosenNode[0]
+        # once we find an unvisited location, add it to the visited list
         visited.append(chosenNodeLocation)
+        # extract the path
         chosenNodePath = chosenNode[1]
-
+    # once we find a solution, return it
     return chosenNodePath
 
 
 def uniformCostSearch(problem):
     """
-    Search the node of least total cost first.
+    Search the node with the least total cost first.
     """
     "*** YOUR CODE HERE ***"
+    # create an empty list to store visited locations
     visited = []
+    # create the frontier using a priority queue to consider cost
     frontier = util.PriorityQueue()
+    # get the start state with a list containing no actions
     startNode = (problem.getStartState(), [])
+    # push the start state to the frontier with a cost of 0
     frontier.push(startNode, 0)
-
+    # get the start node
     chosenNode = frontier.pop()
+    # extract start node location
     chosenNodeLocation = chosenNode[0]
+    # add location to visited list
     visited.append(chosenNodeLocation)
+    # extract location path, should be empty
     chosenNodePath = chosenNode[1]
 
+    # while the current position is not a goal state
     while not problem.isGoalState(chosenNodeLocation):
         # input("Next?")
         # print("chosenNodeLocation: ", chosenNodeLocation)
         # print("chosenNodePath: ", chosenNodePath)
         # print("Cost: ", problem.getCostOfActions(chosenNodePath))
-
+        # expand the current node to see options
         successors = problem.getSuccessors(chosenNodeLocation)
+        # for each of our options
         for state in successors:
+            # extract successor location
             successorLocation = state[0]
             # print("HERE IS THE SUCCESSOR LOCATION: ", successorLocation)
+            # extract successor location path
             successorPath = chosenNodePath + [state[1]]
+            # extract current location cost
             successorCost = state[2]
-            successorCost += problem.getCostOfActions(successorPath)
+            # get the cost of the successor's path
+            successorCost = problem.getCostOfActions(successorPath)
             # print("Here is the cost: ", successorCost)
             # print(successorLocation, successorPath)
+            # push the successor onto the frontier with its location, path, and cost
             frontier.push((successorLocation, successorPath), successorCost)
+        # get the next node in the frontier
         chosenNode = frontier.pop()
+        # extract location
         chosenNodeLocation = chosenNode[0]
+        # while the current location has been visited before
         while chosenNodeLocation in visited:
+            # get another node from the frontier to eliminate duplicate visits
             chosenNode = frontier.pop()
             chosenNodeLocation = chosenNode[0]
+        # add the newly visited location to the visited list
         visited.append(chosenNodeLocation)
+        # extract current node's path
         chosenNodePath = chosenNode[1]
         # print(problem.getCostOfActions(chosenNodePath))
-
     # print(chosenNode[1])
+    # return the current node's path only if it is a goal state
     return chosenNodePath
 
 
@@ -219,49 +273,70 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
+    # list of visited nodes
     visited = []
+    # using a priority queue to consider cost for the frontier
     frontier = util.PriorityQueue()
+    # get start node containing the start state amd an empty list to hold the position's path
     startNode = (problem.getStartState(), [])
+    # add the initial node to the frontier
     frontier.push(startNode, 0)
 
+    # get the next node in the frontier based on cost
     chosenNode = frontier.pop()
+    # extract location
     chosenNodeLocation = chosenNode[0]
+    # add location to the visited locations list
     visited.append(chosenNodeLocation)
+    # extract the path to that position from the start node
     chosenNodePath = chosenNode[1]
     # print(heuristic)
+    # while the current location is not a goal state
     while not problem.isGoalState(chosenNodeLocation):
         # input("Next?")
         # print("chosenNodeLocation: ", chosenNodeLocation)
         # print("chosenNodePath: ", chosenNodePath)
         # print("Cost: ", problem.getCostOfActions(chosenNodePath))
-
+        # print(chosenNodePath)
+        # expand that node to get all the successors
         successors = problem.getSuccessors(chosenNodeLocation)
+        # cycle through all of our options
         for state in successors:
+            # extract successor location
             successorLocation = state[0]
             # print("HERE IS THE SUCCESSOR LOCATION: ", successorLocation)
+            # extract successor location path
             successorPath = chosenNodePath + [state[1]]
+            # extract the cost of that path
             successorCost = state[2]
             successorCost = problem.getCostOfActions(successorPath)
 
             # if heuristic is not None:
                 # AStarCost += heuristic(successorLocation, problem)
                 # print("HERE IS THE SUCCESSOR COST: ", AStarCost)
+            # add estimated cost to goal(using manhattan distance) to total cost
             successorCost += heuristic(successorLocation, problem)
                 # print("HERE IS THE SUCCESSOR COST: ", successorCost)
             # print("Here is the cost: ", successorCost)
             # print(successorLocation, successorPath, successorCost)
+            # add the successor to the frontier
             frontier.push((successorLocation, successorPath), successorCost)
+        # get the next node based on total cost
         chosenNode = frontier.pop()
         chosenNodeLocation = chosenNode[0]
+        # while the location has been visited already, pull from the frontier again to eliminate duplicate visits
         while chosenNodeLocation in visited:
             chosenNode = frontier.pop()
             chosenNodeLocation = chosenNode[0]
+        # once we visit a "new" node, add it to the list of visited nodes and store it
+        # to check if it is a goal state back at the top of the while
         visited.append(chosenNodeLocation)
         chosenNodePath = chosenNode[1]
         # print(problem.getCostOfActions(chosenNodePath))
 
     # print(chosenNode[1])
     # print(successorCost)
+    # once we have found the optimal path, return it
     return chosenNodePath
 
 

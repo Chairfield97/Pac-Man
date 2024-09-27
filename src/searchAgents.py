@@ -35,7 +35,7 @@ project description for details.
 
 Good luck and happy searching!
 """
-from turtledemo.penrose import start
+# from turtledemo.penrose import start
 
 from game import Directions
 from game import Agent
@@ -43,7 +43,7 @@ from game import Actions
 import util
 import time
 import search
-from src.search import uniformCostSearch, aStarSearch, breadthFirstSearch, depthFirstSearch
+from search import uniformCostSearch, aStarSearch, breadthFirstSearch, depthFirstSearch
 
 
 class GoWestAgent(Agent):
@@ -318,23 +318,34 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        # store the start game state to get position later
         self.startingGameState = startingGameState
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
         "*** YOUR CODE HERE ***"
+        # return a tuple of the position and an empty list to append the path
         return self.startingPosition, []
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
+        # get the position
         position = state[0]
+        # get the visited corners list
         visitedCorners = state[1]
+        # if position is a corner
         if position in self.corners:
+            # if corner has not been visited already
             if position not in visitedCorners:
+                # add corner to visited list
                 visitedCorners.append(position)
+            # return the number of remaining unvisited corners
+            # if 0 we win! >:)
             return len(visitedCorners) == 4
+        # if position is not a corner
         else:
+            # there must be corners left since we are checking goal state everytime
             return False
 
     def getSuccessors(self, state):
@@ -358,18 +369,26 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
+            "*** YOUR CODE HERE ***"
+            # if the next move does not hit a wall
             if not hitsWall:
                 nextPosition = nextx, nexty
+                # retrieve the visited list
                 visitedCorners = list(state[1])
+                # if the position is a corner
                 if nextPosition in self.corners:
+                    # if the position has not been visited before
                     if nextPosition not in visitedCorners:
+                        # add position to visited list
                         visitedCorners.append(nextPosition)
+                # create the successor data structure with the next position, the list of
+                # visited positions, the action to get to the position, and the cost of that action
                 successor = ((nextPosition, visitedCorners), action, 1)
+                # add the above successor to a list of all successors
                 successors.append(successor)
-
-            "*** YOUR CODE HERE ***"
-
+        # increment the number of nodes expanded
         self._expanded += 1
+        # return the list of successors
         return successors
 
     def getCostOfActions(self, actions):
@@ -417,31 +436,30 @@ def cornersHeuristic(state, problem):
 
     position = state[0]
     visitedCorners = state[1]
-    print("VISITED CORNERS", visitedCorners)
-    #Get the list of corners PacMan hasn't visited yet.
+    # print("VISITED CORNERS", visitedCorners)
+    # Get the list of corners PacMan hasn't visited yet.
     unvisitedCorners = []
     for corner in corners:
         if corner not in visitedCorners:
-            print("CORNERS: ",corner)
-
+            # print("CORNERS: ", corner)
             unvisitedCorners.append(corner)
 
-    #If there are no more corners to visit we win! :P
+    # If there are no more corners to visit we win! :P
     if len(unvisitedCorners) == 0:
         return 0  # Default to trivial solution
 
-
-    #make a list of all the manhattan distances from the current position to
-    #all the unvisited corners.
-    #formula for calculating Manhattan distance is (x1 - x2) + (y1 -y2)
+    # make a list of all the manhattan distances from the current position to
+    # all the unvisited corners.
+    # formula for calculating Manhattan distance is (x1 - x2) + (y1 -y2)
     distances = []
     for corner in unvisitedCorners:
         distances.append( abs((position[0] - corner[0]))+ abs((position[1] - corner[1])))
-        print("Current Position:", position[0], position[1])
-        print("Corners",corner[0], corner[1])
+        # print("Current Position:", position[0], position[1])
+        # print("Corners",corner[0], corner[1])
 
-    print(distances)
-    print("chosen corner: ", max(distances))
+    # print(distances)
+    # print("chosen corner: ", max(distances))
+    # return the greatest distance
     return max(distances)
 
 
@@ -557,17 +575,23 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
     food_coordinates = foodGrid.asList()
-
-    print (position)
-
+    x1, y1 = position
+    # print(position)
+    # print(problem.walls)
+    # assert not problem.walls[x1][y1], 'point1 is a wall: ' + point1
+    # assert not problem.walls[x2][y2], 'point2 is a wall: ' + str(point2)
+    # a clean list of all possible options for the agent to travel
     distances = []
-    # just calculating distance from current position to all of the existing food pellets
+    # just calculating distance from current position to all the existing food pellets
+    # print(problem.walls[x1][y1])
+
     for food in food_coordinates:
+        # manhattan distance
         distances.append(abs((position[0] - food[0])) + abs((position[1] - food[1])))
-    #if there is no more food return 0
+    # if there is no more food return 0
     if not food_coordinates:
         return 0
-    else:# if there is still food remaining return the largest distance in remaining pellets
+    else:   # if there is still food remaining, return the largest, most accurate distance in remaining pellets
         return max(distances)
 
 
@@ -600,12 +624,10 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-        state = startPosition,food
+        state = startPosition, food
         "*** YOUR CODE HERE ***"
-
-        solution = aStarSearch(problem)
-        return solution
-
+        # use our A* search in search.py
+        return aStarSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -642,9 +664,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x, y = state
 
         "*** YOUR CODE HERE ***"
-        #if Pacman is at the same location as a food dot,
-        #goal test passes, if he's not, fail.
-        if self.food[x][y] == True:
+        # if Pacman is at the same location as a food dot,
+        # goal test passes, if he's not, fail.
+        if self.food[x][y]:
             goal = True
 
         return goal
