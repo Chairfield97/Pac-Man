@@ -35,12 +35,15 @@ project description for details.
 
 Good luck and happy searching!
 """
+from turtledemo.penrose import start
+
 from game import Directions
 from game import Agent
 from game import Actions
 import util
 import time
 import search
+from src.search import uniformCostSearch, aStarSearch, breadthFirstSearch, depthFirstSearch
 
 
 class GoWestAgent(Agent):
@@ -597,9 +600,11 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
+        state = startPosition,food
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        solution = aStarSearch(problem)
+        return solution
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -633,11 +638,16 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test
         that will complete the problem definition.
         """
+        goal = False
         x, y = state
 
-
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #if Pacman is at the same location as a food dot,
+        #goal test passes, if he's not, fail.
+        if self.food[x][y] == True:
+            goal = True
+
+        return goal
 
 
 ##################
